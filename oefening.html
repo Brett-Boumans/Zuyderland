@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oefening — Zuyderland Kunstgids</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+  <div class="exhead">
+    <a href="oefeningen.html" style="color:#fff;display:flex" aria-label="Terug naar oefeningen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="20" y1="12" x2="5" y2="12"/><polyline points="11 5 4 12 11 19"/></svg>
+    </a>
+    <span class="t">Oefeningen</span>
+  </div>
+
+  <div class="exdetail">
+    <a class="backlink" href="oefeningen.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg> Terug</a>
+
+    <div class="row">
+      <h1 id="extitle">Volg de cirkel</h1>
+      <button class="heartbig" id="exheart" aria-label="Favoriet"></button>
+    </div>
+    <p class="desc" id="exdesc"></p>
+
+    <div class="stage" id="stage"></div>
+
+    <div class="phase" id="phase">Adem in</div>
+    <div class="phasecount" id="count">1</div>
+
+    <div class="exbtns">
+      <button class="exbtn" id="startbtn">Start de oefening</button>
+      <a class="exbtn secondary" href="oefeningen.html">Kies een andere oefening</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  var id=new URLSearchParams(location.search).get('id')||'cirkel';
+  var ex=EXERCISES.find(function(e){return e.id===id;})||EXERCISES[0];
+  document.getElementById('extitle').textContent=ex.title;
+  document.getElementById('exdesc').textContent=ex.detail;
+  document.title=ex.title+' — Zuyderland Kunstgids';
+
+  var heart=document.getElementById('exheart');
+  function paintHeart(){var on=Fav.isEx(ex.id);heart.innerHTML=on?ICON.heartFill:ICON.heart;heart.style.color=on?'#e23b3b':'#1f1f1f';}
+  paintHeart();
+  heart.onclick=function(){Fav.toggleEx(ex.id);paintHeart();};
+
+  var stage=document.getElementById('stage');
+  var phaseEl=document.getElementById('phase');
+  var countEl=document.getElementById('count');
+  var startBtn=document.getElementById('startbtn');
+  var running=false, raf=null, t0=0;
+
+  /* ---- bouw stage per type ---- */
+  if(ex.type==='circle'){
+    stage.innerHTML='<div class="breathcircle" id="bc"><div class="inner"></div></div>';
+  } else {
+    stage.innerHTML='<svg id="svg" viewBox="0 0 300 300" width="300" height="300">'+
+      '<path id="guide" fill="none" stroke="#cfe6f2" stroke-width="6" stroke-linecap="round"/>'+
+      '<circle id="dot" r="13" fill="#5BA4CF"/></svg>';
+  }
+
+  function archimedeanPath(cx,cy,turns,maxR){
+    var d='', steps=turns*60;
+    for(var i=0;i<=steps;i++){
+      var th=(i/60)*2*Math.PI;
+      var r=maxR*(i/steps);
+      var x=cx+r*Math.cos(th), y=cy+r*Math.sin(th);
+      d+=(i===0?'M':'L')+x.toFixed(1)+' '+y.toFixed(1);
+    }
+    return d;
+  }
+  function wavePath(w,midY,amp){
+    var d='';
+    for(var x=10;x<=w-10;x+=4){
+      var y=midY+amp*Math.sin((x/ (w-20))*Math.PI*4);
+      d+=(x===10?'M':'L')+x+' '+y.toFixed(1);
+    }
+    return d;
+  }
+  if(ex.type==='spiral'){ document.getElementById('guide').setAttribute('d',archimedeanPath(150,150,3.5,128)); }
+  if(ex.type==='wave'){ document.getElementById('guide').setAttribute('d',wavePath(300,150,70)); }
+
+  function spiralPos(p){ // p:0..1 outer->inner
+    var turns=3.5, maxR=128, q=1-p;
+    var th=q*turns*2*Math.PI;
+    var r=maxR*q;
+    return {x:150+r*Math.cos(th), y:150+r*Math.sin(th)};
+  }
+  function wavePos(p){ var w=300,x=10+p*(w-20); var y=150+70*Math.sin((x/(w-20))*Math.PI*4); return {x:x,y:y}; }
+
+  function setDot(pos){var d=document.getElementById('dot');d.setAttribute('cx',pos.x);d.setAttribute('cy',pos.y);}
+
+  function frame(ts){
+    if(!t0)t0=ts;
+    var el=(ts-t0)/1000;
+    if(ex.type==='circle'){
+      var period=8, ph=(el%period)/period; // 0..1
+      var inhale=ph<0.5;
+      var k=inhale? ph*2 : (1-(ph-0.5)*2); // 0..1..0
+      var scale=0.55+0.45*k;
+      var bc=document.getElementById('bc');
+      bc.style.transform='scale('+scale+')';
+      phaseEl.textContent=inhale?'Adem in':'Adem uit';
+      var secInPhase=(ph%0.5)*period; // 0..4
+      countEl.textContent=Math.min(4,Math.floor(secInPhase)+1);
+    } else if(ex.type==='spiral'){
+      var per=9, p=(el%per)/per;
+      setDot(spiralPos(p));
+      phaseEl.textContent='Volg het puntje';
+      countEl.textContent=Math.floor(el%per)+1;
+    } else { // wave
+      var per2=8, raw=(el%per2)/per2; var p2=raw<0.5?raw*2:1-(raw-0.5)*2;
+      setDot(wavePos(p2));
+      phaseEl.textContent=raw<0.5?'Adem in':'Adem uit';
+      countEl.textContent=Math.floor((el%(per2/2)))+1;
+    }
+    if(running) raf=requestAnimationFrame(frame);
+  }
+
+  function start(){ running=true; t0=0; startBtn.textContent='Pauzeer'; raf=requestAnimationFrame(frame); }
+  function stop(){ running=false; if(raf)cancelAnimationFrame(raf); startBtn.textContent='Start de oefening'; }
+  startBtn.onclick=function(){ running?stop():start(); };
+
+  // beginstand (zoals Figma): cirkel groot, "Adem in", "1"
+  if(ex.type==='circle'){ document.getElementById('bc').style.transform='scale(1)'; }
+  else { setDot(ex.type==='spiral'?spiralPos(0):wavePos(0)); phaseEl.textContent=ex.type==='spiral'?'Volg het puntje':'Adem in'; }
+</script>
+</body>
+</html>

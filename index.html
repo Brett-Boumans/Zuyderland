@@ -1,11 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zuyderland</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zuyderland Kunstgids</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Zuyderland</h1>
+<div class="app">
+  <div id="hdr"></div>
+
+  <div class="page">
+    <div class="hero"><img src="assets/hero.jpg" alt="Kunstwerken in de gang van Zuyderland"></div>
+  </div>
+
+  <div class="crumbrow">
+    <div class="crumb"><a href="index.html">ZUYDERLAND</a><span class="sep">&rsaquo;</span><a href="index.html">KUNSTGIDS</a></div>
+  </div>
+
+  <div class="leesrow">
+    <button class="leesvoor" onclick="leesVoor('.read')" aria-label="Lees voor"><img src="assets/buttons/lees-voor.svg" alt="Lees voor"></button>
+  </div>
+
+  <div class="page">
+    <h2 class="section read">Kunst als gids</h2>
+    <p class="body read">Kunst trekt je aandacht en geeft je iets om even in te verdwijnen, precies wat je nodig hebt als je hoofd al vol zit. Onderzoek toont aan dat even kijken naar kunst je stresshormoon merkbaar verlaagt en je lichaam tot rust brengt. In Zuyderland hangen tientallen werken verspreid door het gebouw, elk met een eigen sfeer, kleur en verhaal. Kunst helpt je om even buiten jezelf te treden, de tijd te vergeten en de wachtkamer te zien als meer dan een plek om te wachten. Op deze pagina ontdek je de collectie en lees je wat het met je doet.</p>
+  </div>
+
+  <div class="orbs" aria-hidden="true">
+    <span class="orb b"></span><span class="orb g"></span><span class="orb o"></span>
+    <span class="orb l"></span><span class="orb b2"></span>
+  </div>
+
+  <div class="page">
+    <h2 class="section read">Kunstcollectie</h2>
+    <p class="body read">In Zuyderland hangen tientallen kunstwerken verspreid door het gebouw, van schilderijen tot fotografie en beeldhouwwerk. Voor dit project hebben we de collectie onderzocht en gekeken wat de kleuren en sfeer van elk werk psychologisch met je doen. Blauw kalmeert de hartslag, groen geeft een gevoel van balans en herstel, warm oranje brengt energie en warmte. Op deze pagina ontdek je de werken, lees je wat ze met je kunnen doen en vind je de locatie zodat je ze na je afspraak zelf kunt opzoeken.</p>
+  </div>
+
+  <div class="slider">
+    <a class="slide" href="kunstcollectie.html?cat=beeldhouwkunst"><img src="assets/artworks/appie-drielsma.jpg" alt="Appie Drielsma"><div class="cap"><b>Appie Drielsma</b><span>Beeldhouwkunst</span></div></a>
+    <a class="slide" href="kunstcollectie.html?cat=beeldhouwkunst"><img src="assets/artworks/pepe-gregoire.jpg" alt="Pépé Grégoire"><div class="cap"><b>Pépé Grégoire</b><span>Beeldhouwkunst</span></div></a>
+    <a class="slide" href="kunstcollectie.html?cat=schilderkunst"><img src="assets/artworks/bas-coenegracht-downtime.jpg" alt="Bas Coenegracht"><div class="cap"><b>Bas Coenegracht</b><span>Downtime</span></div></a>
+    <a class="slide" href="kunstcollectie.html?cat=installatiekunst"><img src="assets/artworks/claudy-jongstra.jpg" alt="Claudy Jongstra"><div class="cap"><b>Claudy Jongstra</b><span>Installatiekunst</span></div></a>
+    <a class="slide" href="kunstcollectie.html?cat=fotografie"><img src="assets/artworks/sophie-langohr.jpg" alt="Sophie Langohr"><div class="cap"><b>Sophie Langohr</b><span>Fotografie</span></div></a>
+  </div>
+
+  <div class="page">
+    <div class="btncenter"><a class="btnimg" href="kunstcollectie.html"><img class="bekijkimg" src="assets/buttons/bekijk-kunstwerken.svg" alt="Bekijk kunstwerken"></a></div>
+  </div>
+
+  <section class="stress">
+    <h2>Verminder je stress</h2>
+    <p class="intro">Wachten in een ziekenhuis voelt voor veel mensen als een periode van angst en onzekerheid. Onderzoek laat zien dat kleine afleidingen en rustmomenten die spanning direct kunnen verminderen. Kies hieronder wat het beste bij jou past.</p>
+
+    <div class="stresscards">
+      <a class="scard" href="canvas.html">
+        <div class="scard-visual" style="background:linear-gradient(135deg,#eaf4f7,#dce9ee)">
+          <svg viewBox="0 0 220 150" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+            <rect x="30" y="20" width="160" height="110" rx="8" fill="#fff" stroke="#cfe0e6"/>
+            <path d="M50 95 C70 60,90 110,110 80 S150 50,175 75" fill="none" stroke="#5BA4CF" stroke-width="6" stroke-linecap="round"/>
+            <path d="M55 110 C80 95,110 120,150 100" fill="none" stroke="#8DBF7E" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="160" cy="45" r="10" fill="#EAD37A"/><circle cx="70" cy="45" r="8" fill="#B49BD0"/>
+          </svg>
+        </div>
+        <div class="scard-body">
+          <h3>Digitale tekencanvas</h3>
+          <p>Tekenen heeft een bewezen rustgevend effect op lichaam en geest. De kleuren op deze canvas zijn gekozen op basis van onderzoek naar kleurenpsychologie. Kies een kleur die past bij hoe je je voelt en teken even los.</p>
+          <span class="arrow"><img class="arrow-img" src="assets/buttons/arrow-circle.svg" alt=""></span>
+        </div>
+      </a>
+
+      <a class="scard" href="oefeningen.html">
+        <div class="scard-visual" style="background:radial-gradient(circle at 50% 50%,#eaf6fb,#d4e8f1)">
+          <svg viewBox="0 0 220 150" width="100%" height="100%">
+            <circle cx="110" cy="75" r="58" fill="#bfe3f3"/><circle cx="110" cy="75" r="42" fill="#8fd0ee"/>
+            <circle cx="110" cy="75" r="26" fill="#5BA4CF"/>
+          </svg>
+        </div>
+        <div class="scard-body">
+          <h3>Oefeningen</h3>
+          <p>Je ademhaling is een van de snelste manieren om je zenuwstelsel te kalmeren. Door je ogen te volgen langs een lijn of cirkel terwijl je bewust ademt, daalt je hartslag en voel je je minder gespannen.</p>
+          <span class="arrow"><img class="arrow-img" src="assets/buttons/arrow-circle.svg" alt=""></span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <div id="ftr"></div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('hdr').innerHTML = zHeader();
+  document.getElementById('ftr').innerHTML = zFooter();
+</script>
 </body>
 </html>

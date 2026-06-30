@@ -1,0 +1,28 @@
+ZUYDERLAND KUNSTGIDS — website voor de expo
+============================================
+
+INHOUD
+  index.html ............ Hoofdpagina (Kunst als gids, kleur-orbs, Kunstcollectie, Verminder je stress)
+  kunstcollectie.html ... Onze kunstwerken — tabs, zoeken, favorieten (22 werken)
+  oefeningen.html ....... Overzicht oefeningen (Favorieten / Ademhaling / Meditatie)
+  oefening.html ......... Detail met werkende animatie (?id=cirkel | spiraal | golf)
+  canvas.html ........... Digitaal tekencanvas (tekenen, kleuren, gum, vullen, insturen)
+  css/ , js/ , assets/ ... stijl, logica en de 22 kunstwerk-afbeeldingen
+
+LOKAAL TESTEN
+  Dubbelklik index.html — werkt direct in elke moderne browser (Chrome/Safari/Edge).
+  Tip: open op je telefoon om de mobiele weergave (zoals Figma) te zien.
+
+ONLINE ZETTEN VOOR DE QR-CODE
+  De QR-code moet naar de online URL van index.html wijzen. Snelste gratis opties:
+   1. Netlify Drop  -> ga naar https://app.netlify.com/drop en sleep de MAP
+      'zuyderland-kunstgids' erin. Je krijgt meteen een https-link.
+   2. GitHub Pages / Vercel / Cloudflare Pages -> upload dezelfde map.
+  Genereer daarna een QR-code van die link (bv. qr-code-generator.com) voor in het boekje.
+
+GOED OM TE WETEN
+  - Favorieten (hartjes) worden in de browser onthouden (localStorage).
+  - "Lees voor" gebruikt de spraakfunctie van de browser (Nederlands).
+  - "Stuur canvas in" downloadt de tekening als PNG naar je apparaat en toont een bevestiging.
+  - De mascotte is vervangen door een rustgevende, geanimeerde kleur-orb-balk
+    (blauw/groen/oranje/lila) die aansluit op jullie kleurenpsychologie-onderzoek.

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Onze kunstwerken — Zuyderland Kunstgids</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+  <div class="galhead">
+    <a class="back" href="index.html" aria-label="Terug">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="20" y1="12" x2="5" y2="12"/><polyline points="11 5 4 12 11 19"/></svg>
+    </a>
+    <div class="gtitle">Onze kunstwerken</div>
+  </div>
+  <div class="galshadow"></div>
+
+  <div class="searchwrap">
+    <div class="searchbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+      <input id="search" type="text" placeholder="Zoek een kunstwerk" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="gallery" id="gallery"></div>
+
+  <div id="ftr"></div>
+
+  <!-- Kunstwerk-modal -->
+  <div class="kmodal" id="kmodal" role="dialog" aria-modal="true">
+    <div class="sheet">
+      <div class="kmhead">
+        <button class="back" id="kmback" aria-label="Sluiten">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="20" y1="12" x2="5" y2="12"/><polyline points="11 5 4 12 11 19"/></svg>
+        </button>
+        <span class="kmtitle" id="kmtitle"></span>
+      </div>
+      <div class="kmimg"><img id="kmimg" src="" alt=""></div>
+      <div class="kmbody">
+        <div class="kmdiv"></div>
+        <div class="kmlabel">Kunstenaar</div>
+        <div class="kmartistrow">
+          <p class="kmartist" id="kmartist"></p>
+          <button class="kmfav" id="kmfav" aria-label="Favoriet"></button>
+        </div>
+        <div class="kmcols">
+          <div><div class="kmlabel">Titel</div><p class="kmval" id="kmval-title"></p></div>
+          <div><div class="kmlabel">Jaartal</div><p class="kmval" id="kmval-year"></p></div>
+        </div>
+        <div class="kmlabel">Project details</div>
+        <p class="kmdesc" id="kmdesc"></p>
+        <div class="kmlabel">Locatie Zuyderland</div>
+        <p class="kmloc" id="kmloc"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('ftr').innerHTML = zFooter();
+
+  var params = new URLSearchParams(location.search);
+  var active = params.get('cat') || 'alles';
+  if(!CATEGORIES.some(function(c){return c.key===active;})) active='alles';
+  var query='';
+  var tabsEl=document.getElementById('tabs');
+  var galEl=document.getElementById('gallery');
+
+  function renderTabs(){
+    tabsEl.innerHTML=CATEGORIES.map(function(c){
+      return '<button class="tab'+(c.key===active?' active':'')+'" data-k="'+c.key+'">'+c.label+'</button>';
+    }).join('');
+    Array.prototype.forEach.call(tabsEl.querySelectorAll('.tab'),function(b){
+      b.onclick=function(){active=b.dataset.k;renderTabs();renderGallery();};
+    });
+  }
+  function subtitle(a){ return a.title ? a.title : CAT_LABEL[a.cat]; }
+
+  function renderGallery(){
+    var list=ARTWORKS.filter(function(a){
+      if(active==='favorieten'){ if(!Fav.isArt(a.slug)) return false; }
+      else if(active!=='alles'){ if(a.cat!==active) return false; }
+      if(query){
+        var hay=(a.artist+' '+a.title+' '+CAT_LABEL[a.cat]).toLowerCase();
+        if(hay.indexOf(query)===-1) return false;
+      }
+      return true;
+    });
+    if(list.length===0){ galEl.innerHTML='<div class="empty">Geen kunstwerken gevonden.</div>'; return; }
+    galEl.innerHTML=list.map(function(a){
+      var on=Fav.isArt(a.slug);
+      return '<div class="artcard" data-slug="'+a.slug+'">'+
+        '<div class="frame"><img loading="lazy" src="assets/artworks/'+a.slug+'.jpg" alt="'+a.artist+'"></div>'+
+        '<div class="meta"><div class="who"><b>'+a.artist+'</b><span>'+subtitle(a)+'</span></div>'+
+        '<button class="fav'+(on?' on':'')+'" data-s="'+a.slug+'" aria-label="Favoriet">'+(on?ICON.heartFill:ICON.heart)+'</button>'+
+        '</div></div>';
+    }).join('');
+    Array.prototype.forEach.call(galEl.querySelectorAll('.fav'),function(btn){
+      btn.onclick=function(e){
+        e.stopPropagation();
+        var on=Fav.toggleArt(btn.dataset.s);
+        btn.classList.toggle('on',on); btn.innerHTML=on?ICON.heartFill:ICON.heart;
+        if(active==='favorieten' && !on){ renderGallery(); }
+      };
+    });
+    Array.prototype.forEach.call(galEl.querySelectorAll('.artcard'),function(card){
+      card.onclick=function(){ openModal(card.dataset.slug); };
+    });
+  }
+
+  /* ---------- Modal ---------- */
+  var kmodal=document.getElementById('kmodal');
+  var current=null;
+  function paintKmFav(){
+    var btn=document.getElementById('kmfav');
+    var on=Fav.isArt(current.slug);
+    btn.classList.toggle('on',on); btn.innerHTML=on?ICON.heartFill:ICON.heart;
+  }
+  function openModal(slug){
+    current=ARTWORKS.find(function(a){return a.slug===slug;});
+    if(!current) return;
+    document.getElementById('kmtitle').textContent=current.title||current.artist;
+    var img=document.getElementById('kmimg');
+    img.src='assets/artworks/'+current.slug+'.jpg'; img.alt=current.artist;
+    document.getElementById('kmartist').textContent=current.artist;
+    document.getElementById('kmval-title').textContent=current.title||CAT_LABEL[current.cat];
+    document.getElementById('kmval-year').textContent=current.jaar||'—';
+    document.getElementById('kmdesc').textContent=current.details;
+    document.getElementById('kmloc').textContent=current.locatie;
+    paintKmFav();
+    kmodal.classList.add('show');
+    kmodal.querySelector('.sheet').scrollTop=0;
+    document.body.style.overflow='hidden';
+  }
+  function closeModal(){ kmodal.classList.remove('show'); document.body.style.overflow=''; }
+  document.getElementById('kmback').onclick=closeModal;
+  document.getElementById('kmfav').onclick=function(){ Fav.toggleArt(current.slug); paintKmFav(); renderGallery(); };
+  kmodal.addEventListener('click',function(e){ if(e.target===kmodal) closeModal(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && kmodal.classList.contains('show')) closeModal(); });
+
+  document.getElementById('search').addEventListener('input',function(e){
+    query=e.target.value.trim().toLowerCase(); renderGallery();
+  });
+
+  renderTabs(); renderGallery();
+</script>
+</body>
+</html>

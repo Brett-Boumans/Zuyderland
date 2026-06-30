@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Digitale canvas — Zuyderland Kunstgids</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  .sizes{display:flex;gap:14px;justify-content:center;align-items:center;padding:6px 0 4px}
+  .sizebtn{width:40px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:8px}
+  .sizebtn.active{background:#e6eef0;outline:2px solid #246079}
+  .sizedot{border-radius:50%;background:#1f1f1f}
+  .sendwrap{justify-content:center;margin:16px 0 6px}
+  .wheelpop{position:fixed;inset:0;background:rgba(20,40,48,.55);display:none;align-items:center;justify-content:center;z-index:70;padding:24px}
+  .wheelpop.show{display:flex}
+  .wbox{background:#fff;border-radius:16px;padding:18px;width:232px;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.3)}
+  .wbox canvas{border-radius:50%;cursor:crosshair;touch-action:none}
+  .wrow{display:flex;align-items:center;gap:8px;font-size:12px;color:#555;margin:12px 0 6px}
+  .wrow input{flex:1}
+  .wprev{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;margin:4px 0 12px}
+  .wsw{width:22px;height:22px;border-radius:50%;border:1px solid #ccc;display:inline-block}
+  .wbtns{display:flex;gap:10px;justify-content:center}
+  .wbtns button{padding:9px 16px;border-radius:8px;font-size:14px}
+  #wcancel{background:#eef1f2;color:#333}
+  #wok{background:#20556B;color:#fff}
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="hdr"></div>
+
+  <div class="crumbrow">
+    <div class="crumb"><a href="index.html">ZUYDERLAND</a><span class="sep">&rsaquo;</span><a href="index.html">KUNSTGIDS</a><span class="sep">&rsaquo;</span><span class="cur">DIGITALE CANVAS</span></div>
+  </div>
+
+  <div class="page">
+    <h1 class="title read">Digitale canvas</h1>
+    <p class="body read">Tekenen hoeft geen kunst te zijn om goed te voelen. Onderzoek naar kleurenpsychologie laat zien dat bewust omgaan met kleur stress vermindert en je even uit je hoofd haalt. De kleuren op deze canvas zijn daarom niet willekeurig gekozen, ze komen rechtstreeks uit ons onderzoek. Blauw voor rust, groen voor balans, zacht geel voor warmte en lila voor creativiteit. Teken wat je wilt, zo lang of zo kort als je wilt. Als je de pagina sluit verdwijnt alles, geen druk, geen resultaat, puur voor het moment zelf.</p>
+
+    <div class="canvasframe">
+      <canvas id="cv"></canvas>
+    </div>
+
+    <div class="toolbar" id="toolbar"></div>
+    <div class="sizes" id="sizes"></div>
+    <div class="palette" id="palette"></div>
+
+    <div class="sendwrap">
+      <button class="btn-dark" id="send"><span class="txt">Stuur canvas in</span><span class="circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></span></button>
+    </div>
+  </div>
+
+  <div class="wheelpop" id="wheelpop">
+    <div class="wbox">
+      <canvas id="wheel" width="180" height="180"></canvas>
+      <div class="wrow"><span>Donker</span><input type="range" id="light" min="6" max="94" value="50"><span>Licht</span></div>
+      <div class="wprev"><span class="wsw" id="wswatch"></span><span id="whex">#5BA4CF</span></div>
+      <div class="wbtns"><button id="wcancel">Sluiten</button><button id="wok">Kies kleur</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="box">
+      <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <h3>Opgeslagen!</h3>
+      <p>Je tekening is gedownload naar je apparaat. Even loslaten, puur voor het moment zelf.</p>
+      <button id="modalok">Nieuwe tekening</button>
+    </div>
+  </div>
+
+  <div id="ftr"></div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('hdr').innerHTML = zHeader();
+  document.getElementById('ftr').innerHTML = zFooter();
+
+  var cv=document.getElementById('cv');
+  var ctx=cv.getContext('2d',{willReadFrequently:true});
+
+  function sizeCanvas(){
+    var rect=cv.getBoundingClientRect();
+    var prev=(cv.width)?ctx.getImageData(0,0,cv.width,cv.height):null;
+    cv.width=Math.round(rect.width); cv.height=Math.round(rect.height);
+    ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height);
+    if(prev) ctx.putImageData(prev,0,0);
+    ctx.lineCap='round'; ctx.lineJoin='round';
+  }
+  sizeCanvas();
+
+  var state={tool:'pen',color:'#5BA4CF',size:9};
+
+  /* ---- gereedschap ---- */
+  var TOOLS=[
+    {k:'bucket',icon:ICON.bucket,label:'Vullen'},
+    {k:'eraser',icon:ICON.eraser,label:'Gum'},
+    {k:'pencil',icon:ICON.pencil,label:'Potlood'},
+    {k:'brush', icon:ICON.brush, label:'Penseel'},
+    {k:'wheel', icon:'<span class="wheel"></span>',label:'Kleur kiezen'}
+  ];
+  var tb=document.getElementById('toolbar');
+  function toolActive(k){
+    if(k==='bucket') return state.tool==='bucket';
+    if(k==='eraser') return state.tool==='eraser';
+    if(k==='pencil') return state.tool==='pen' && state.size<=5;
+    if(k==='brush')  return state.tool==='pen' && state.size>5;
+    return false;
+  }
+  function renderTools(){
+    tb.innerHTML=TOOLS.map(function(t){
+      return '<button class="tool'+(toolActive(t.k)?' active':'')+'" data-k="'+t.k+'" title="'+t.label+'" aria-label="'+t.label+'">'+t.icon+'</button>';
+    }).join('');
+    Array.prototype.forEach.call(tb.querySelectorAll('.tool'),function(b){
+      b.onclick=function(){
+        var k=b.dataset.k;
+        if(k==='wheel'){ openWheel(); return; }
+        if(k==='bucket'){ state.tool='bucket'; }
+        else if(k==='eraser'){ state.tool='eraser'; }
+        else if(k==='pencil'){ state.tool='pen'; state.size=4; }
+        else if(k==='brush'){ state.tool='pen'; state.size=14; }
+        renderAll();
+      };
+    });
+  }
+
+  /* ---- pendikte ---- */
+  var SIZE_OPTS=[{v:4,d:8},{v:9,d:14},{v:16,d:22},{v:26,d:30}];
+  var sz=document.getElementById('sizes');
+  function renderSizes(){
+    sz.innerHTML=SIZE_OPTS.map(function(o){
+      var act=(state.tool!=='bucket' && state.size===o.v)?' active':'';
+      return '<button class="sizebtn'+act+'" data-v="'+o.v+'" aria-label="Dikte '+o.v+'"><span class="sizedot" style="width:'+o.d+'px;height:'+o.d+'px;background:'+(state.tool==='eraser'?'#9aa':'#1f1f1f')+'"></span></button>';
+    }).join('');
+    Array.prototype.forEach.call(sz.querySelectorAll('.sizebtn'),function(b){
+      b.onclick=function(){ state.size=parseInt(b.dataset.v,10); if(state.tool==='bucket')state.tool='pen'; renderAll(); };
+    });
+  }
+
+  /* ---- kleuren ---- */
+  var SWATCHES=[
+    {c:'#5BA4CF',n:'Blauw'},{c:'#8DBF7E',n:'Groen'},{c:'#EAD37A',n:'Geel'},
+    {c:'#B49BD0',n:'Lila'},{c:'#1f1f1f',n:'Zwart'}
+  ];
+  var pal=document.getElementById('palette');
+  function renderPalette(){
+    pal.innerHTML=SWATCHES.map(function(s){
+      var act=(s.c.toLowerCase()===state.color.toLowerCase() && state.tool!=='eraser')?' active':'';
+      return '<div style="text-align:center"><button class="swatch'+act+'" style="background:'+s.c+'" data-c="'+s.c+'" aria-label="'+s.n+'"></button><div class="swlabel">'+s.n+'</div></div>';
+    }).join('');
+    Array.prototype.forEach.call(pal.querySelectorAll('.swatch'),function(b){
+      b.onclick=function(){ state.color=b.dataset.c; if(state.tool==='eraser'||state.tool==='bucket')state.tool='pen'; renderAll(); };
+    });
+  }
+
+  var colorInput=document.createElement('input');
+  colorInput.type='color'; colorInput.value=state.color;
+  colorInput.style.position='fixed'; colorInput.style.left='-9999px';
+  document.body.appendChild(colorInput);
+  colorInput.addEventListener('input',function(){ state.color=colorInput.value; if(state.tool==='eraser'||state.tool==='bucket')state.tool='pen'; renderAll(); });
+
+  function renderAll(){ renderTools(); renderSizes(); renderPalette(); }
+  renderAll();
+
+  /* ---- tekenen (pointer events: muis + touch) ---- */
+  var drawing=false,last=null;
+  function pos(e){
+    var r=cv.getBoundingClientRect();
+    return {x:(e.clientX-r.left)*(cv.width/r.width), y:(e.clientY-r.top)*(cv.height/r.height)};
+  }
+  function applyStyle(){
+    if(state.tool==='eraser'){ ctx.strokeStyle='#fff'; ctx.fillStyle='#fff'; ctx.lineWidth=state.size*1.6; }
+    else { ctx.strokeStyle=state.color; ctx.fillStyle=state.color; ctx.lineWidth=state.size; }
+  }
+  function dot(p){ applyStyle(); ctx.beginPath(); ctx.arc(p.x,p.y,ctx.lineWidth/2,0,Math.PI*2); ctx.fill(); }
+  function line(a,b){ applyStyle(); ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); }
+
+  cv.addEventListener('pointerdown',function(e){
+    e.preventDefault();
+    var p=pos(e);
+    if(state.tool==='bucket'){ floodFill(Math.round(p.x),Math.round(p.y),state.color); return; }
+    drawing=true; last=p; dot(p);
+    if(cv.setPointerCapture){ try{cv.setPointerCapture(e.pointerId);}catch(err){} }
+  });
+  cv.addEventListener('pointermove',function(e){ if(!drawing)return; e.preventDefault(); var p=pos(e); line(last,p); last=p; });
+  cv.addEventListener('pointerup',function(){ drawing=false; last=null; });
+  cv.addEventListener('pointercancel',function(){ drawing=false; last=null; });
+  cv.addEventListener('pointerleave',function(){ drawing=false; last=null; });
+
+  /* ---- emmer / vullen (scanline flood fill) ---- */
+  function hexToRgb(h){
+    h=h.replace('#',''); if(h.length===3){h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];}
+    return [parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16),255];
+  }
+  function floodFill(x,y,hex){
+    if(x<0||y<0||x>=cv.width||y>=cv.height)return;
+    var img=ctx.getImageData(0,0,cv.width,cv.height),d=img.data,W=cv.width,H=cv.height;
+    var idx=(y*W+x)*4, t=[d[idx],d[idx+1],d[idx+2],d[idx+3]], f=hexToRgb(hex);
+    if(t[0]===f[0]&&t[1]===f[1]&&t[2]===f[2]&&t[3]===f[3])return;
+    function match(i){return Math.abs(d[i]-t[0])<24&&Math.abs(d[i+1]-t[1])<24&&Math.abs(d[i+2]-t[2])<24&&Math.abs(d[i+3]-t[3])<24;}
+    var st=[[x,y]];
+    while(st.length){
+      var s=st.pop(),sx=s[0],sy=s[1],uy=sy;
+      while(uy>=0&&match((uy*W+sx)*4))uy--; uy++;
+      var rl=false,rr=false;
+      while(uy<H&&match((uy*W+sx)*4)){
+        var i=(uy*W+sx)*4; d[i]=f[0];d[i+1]=f[1];d[i+2]=f[2];d[i+3]=255;
+        if(sx>0){ if(match((uy*W+sx-1)*4)){ if(!rl){st.push([sx-1,uy]);rl=true;} } else rl=false; }
+        if(sx<W-1){ if(match((uy*W+sx+1)*4)){ if(!rr){st.push([sx+1,uy]);rr=true;} } else rr=false; }
+        uy++;
+      }
+    }
+    ctx.putImageData(img,0,0);
+  }
+
+  /* ---- kleurenwiel ---- */
+  function hslHex(h,sat,l){
+    var c=(1-Math.abs(2*l-1))*sat, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2, r,g,b;
+    if(h<60){r=c;g=x;b=0;}else if(h<120){r=x;g=c;b=0;}else if(h<180){r=0;g=c;b=x;}
+    else if(h<240){r=0;g=x;b=c;}else if(h<300){r=x;g=0;b=c;}else{r=c;g=0;b=x;}
+    function hh(n){n=Math.round((n+m)*255);return ('0'+n.toString(16)).slice(-2);}
+    return '#'+hh(r)+hh(g)+hh(b);
+  }
+  var wheelpop=document.getElementById('wheelpop');
+  var wc=document.getElementById('wheel'), wx=wc.getContext('2d');
+  var WC=90, WR=86, wHue=205, wSat=0.55;
+  (function(){
+    var img=wx.createImageData(180,180), dd=img.data;
+    for(var y=0;y<180;y++){ for(var x=0;x<180;x++){
+      var dx=x-WC, dy=y-WC, d=Math.sqrt(dx*dx+dy*dy), i=(y*180+x)*4;
+      if(d<=WR){ var h=(Math.atan2(dy,dx)*180/Math.PI+360)%360, col=hslHex(h, Math.min(1,d/WR), 0.5);
+        dd[i]=parseInt(col.substr(1,2),16); dd[i+1]=parseInt(col.substr(3,2),16); dd[i+2]=parseInt(col.substr(5,2),16); dd[i+3]=255; }
+    }}
+    wx.putImageData(img,0,0);
+  })();
+  var lightEl=document.getElementById('light');
+  function wheelColor(){ return hslHex(wHue, wSat, lightEl.value/100); }
+  function updPrev(){ var col=wheelColor(); document.getElementById('wswatch').style.background=col; document.getElementById('whex').textContent=col; }
+  function pickWheel(e){ var r=wc.getBoundingClientRect(); var dx=(e.clientX-r.left)*(180/r.width)-WC, dy=(e.clientY-r.top)*(180/r.height)-WC;
+    var d=Math.sqrt(dx*dx+dy*dy); wHue=(Math.atan2(dy,dx)*180/Math.PI+360)%360; wSat=Math.min(1,d/WR); updPrev(); }
+  wc.addEventListener('pointerdown',function(e){e.preventDefault();pickWheel(e);});
+  wc.addEventListener('pointermove',function(e){ if(e.buttons===1){e.preventDefault();pickWheel(e);} });
+  lightEl.addEventListener('input',updPrev);
+  function openWheel(){ updPrev(); wheelpop.classList.add('show'); }
+  document.getElementById('wcancel').onclick=function(){ wheelpop.classList.remove('show'); };
+  document.getElementById('wok').onclick=function(){ state.color=wheelColor(); if(state.tool==='eraser'||state.tool==='bucket')state.tool='pen'; renderAll(); wheelpop.classList.remove('show'); };
+  wheelpop.addEventListener('click',function(e){ if(e.target===wheelpop) wheelpop.classList.remove('show'); });
+
+  /* ---- insturen ---- */
+  var modal=document.getElementById('modal');
+  document.getElementById('send').onclick=function(){
+    try{ var a=document.createElement('a'); a.download='mijn-tekening-zuyderland.png'; a.href=cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }catch(e){}
+    modal.classList.add('show');
+  };
+  document.getElementById('modalok').onclick=function(){ ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height); modal.classList.remove('show'); };
+</script>
+</body>
+</html>

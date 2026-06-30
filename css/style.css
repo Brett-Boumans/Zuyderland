@@ -1,0 +1,243 @@
+/* ============================================================
+   Zuyderland Kunstgids — designsysteem (mobile-first kolom)
+   ============================================================ */
+:root{
+  --teal-900:#194456;
+  --teal-850:#20556B;
+  --teal-700:#246079;
+  --turq:#4FB9C5;
+  --blue:#1a7fc1;
+  --blue-light:#6FC9F0;
+  --ink:#1f1f1f;
+  --muted:#6b7a80;
+  --line:#e3e3e3;
+  --red:#e23b3b;
+  --orange:#FFA640;
+  --pill-teal:#9cc3c9;
+  --pill-orange:#f1c39a;
+  --shadow:0 6px 18px rgba(0,0,0,.08);
+  --radius:14px;
+  --app:500px;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink);background:#fff;
+  -webkit-font-smoothing:antialiased;line-height:1.5;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+/* Mobiele kolom, gecentreerd, zonder kader/schaduw */
+.app{width:100%;max-width:var(--app);margin:0 auto;background:#fff;min-height:100vh;position:relative;overflow-x:hidden}
+
+/* ---------- Utility-balk ---------- */
+.utilbar{background:var(--teal-900);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:11px 18px;font-size:13px;letter-spacing:.3px}
+.utilbar .u-left,.utilbar .u-right{display:flex;align-items:center;gap:8px}
+.utilbar svg{width:17px;height:17px;flex:none}
+
+/* ---------- Hoofdnavigatie ---------- */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 0;border-bottom:1px solid var(--line);background:#fff}
+.nav .logo{display:flex;align-items:flex-end;padding-bottom:12px}
+.nav .navitems{display:flex;align-items:stretch}
+.nav .navitem{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 14px 11px;border-left:1px solid var(--line);position:relative;color:#2a2a2a}
+.nav .navitem:first-child{border-left:none}
+.nav .navitem svg{width:23px;height:23px}
+.nav .navitem span{font-size:9.5px;letter-spacing:.4px;color:#444}
+.nav .navitem.spoed svg{color:#d8232a}
+.badge{position:absolute;top:0;right:8px;background:#d8232a;color:#fff;font-size:9px;min-width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+.zmark{width:42px;height:30px}
+
+/* ---------- Breadcrumb ---------- */
+.crumbrow{display:flex;align-items:center;padding:16px 18px 2px;gap:10px;flex-wrap:wrap}
+.crumb{font-size:12px;letter-spacing:.4px;color:var(--blue);text-transform:uppercase;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.crumb .sep{color:var(--blue);opacity:.7}
+.crumb .cur{color:var(--muted);text-transform:none;letter-spacing:0}
+
+/* ---------- Lees voor (Figma-knop als afbeelding) ---------- */
+.leesrow{padding:14px 18px 0}
+.leesvoor{display:inline-block;padding:0;border:none;background:none;line-height:0}
+.leesvoor img{height:26px;width:auto}
+
+/* ---------- Headings ---------- */
+.page{padding:0 18px}
+h1.title{font-weight:300;font-size:36px;line-height:1.12;margin:8px 0 14px}
+h2.section{font-weight:300;font-size:30px;margin:28px 0 14px}
+.body{font-size:16px;color:#2c2c2c;margin:0 0 24px}
+
+/* ---------- Hero ---------- */
+.hero{margin:8px 0 0;border-radius:4px;overflow:hidden}
+.hero img{width:100%;height:175px;object-fit:cover}
+
+/* ---------- Zwevende kleur-orbs ---------- */
+.orbs{position:relative;height:215px;margin:40px 0 26px;overflow:hidden;background:radial-gradient(120% 120% at 50% 0%, #235c70 0%, #194456 70%)}
+.orbs .orb{position:absolute;border-radius:50%;filter:blur(14px);opacity:.72;mix-blend-mode:screen}
+.orb.b{width:150px;height:150px;background:#4aa3d6;left:-10px;top:30px;animation:drift1 16s ease-in-out infinite}
+.orb.g{width:130px;height:130px;background:#7ec98a;right:-5px;top:10px;animation:drift2 19s ease-in-out infinite}
+.orb.o{width:120px;height:120px;background:#efa24c;left:18%;bottom:-30px;animation:drift3 21s ease-in-out infinite}
+.orb.l{width:140px;height:140px;background:#b69ad6;right:14%;bottom:-40px;animation:drift4 18s ease-in-out infinite}
+.orb.b2{width:90px;height:90px;background:#6fc3d8;left:46%;top:38%;animation:drift2 23s ease-in-out infinite}
+@keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,20px) scale(1.15)}}
+@keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-35px,25px) scale(1.1)}}
+@keyframes drift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-25px) scale(1.2)}}
+@keyframes drift4{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-30px,-20px) scale(1.12)}}
+@media (prefers-reduced-motion:reduce){.orb{animation:none!important}}
+
+/* ---------- Kunstcollectie slider (swipebaar) ---------- */
+.slider{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  padding:8px 18px 12px;scrollbar-width:none}
+.slider::-webkit-scrollbar{display:none}
+.slide{flex:0 0 auto;width:150px;scroll-snap-align:center;text-align:left}
+.slide img{width:150px;height:190px;object-fit:cover;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.16)}
+.slide .cap{font-size:12.5px;margin-top:8px}
+.slide .cap b{font-weight:700;display:block}
+.slide .cap span{color:var(--muted)}
+
+/* ---------- Knoppen ---------- */
+.btnimg{display:inline-block;line-height:0}
+.bekijkimg{height:46px;width:auto}
+.btncenter{display:flex;justify-content:flex-start;padding:6px 0 4px}
+.arrow-img{width:34px;height:34px}
+
+/* Canvas-knop (zelfde stijl als Bekijk: teal + donker pijlvak) */
+.btn-dark{display:inline-flex;align-items:stretch;border-radius:8px;overflow:hidden;box-shadow:var(--shadow);color:#fff}
+.btn-dark .txt{background:#20556B;padding:13px 22px;font-size:16px;display:flex;align-items:center}
+.btn-dark .circle{background:#194456;display:flex;align-items:center;justify-content:center;width:50px}
+.btn-dark .circle svg{width:18px;height:18px}
+
+/* ---------- Verminder je stress ---------- */
+.stress{background:var(--turq);margin-top:30px;padding:30px 18px 34px}
+.stress h2{font-weight:300;font-size:29px;margin:0 0 12px;color:#0e3942}
+.stress .intro{font-size:15px;color:#0e3942;margin:0 0 22px}
+.stresscards{display:grid;grid-template-columns:1fr;gap:20px}
+.scard{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:block;color:inherit}
+.scard .scard-visual{height:160px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.scard .scard-body{padding:16px 18px 18px;position:relative}
+.scard h3{font-weight:700;font-size:20px;margin:0 0 8px}
+.scard p{font-size:14px;color:#3a3a3a;margin:0;padding-right:46px}
+.scard .arrow{position:absolute;right:16px;bottom:16px;line-height:0}
+
+/* ---------- Footer (kort) — sluit aan op #4FB9C5, geen witruimte ---------- */
+.footer{background:var(--teal-900);color:#fff;text-align:center;padding:30px 18px 30px;position:relative;margin:0}
+.footer .legal{font-size:13px;font-weight:700;letter-spacing:.2px;margin-bottom:14px}
+.footer .tagline{color:var(--blue-light);font-size:23px;font-weight:700;font-style:italic}
+.totop{position:absolute;top:-21px;right:20px;line-height:0;background:none;border:none;padding:0}
+.totop img{width:42px;height:42px}
+
+/* ============================================================
+   GALERIJ
+   ============================================================ */
+.galhead{background:var(--teal-850);color:#fff;display:flex;align-items:center;gap:16px;padding:16px 18px}
+.galhead .back{display:flex;align-items:center;color:#fff}
+.galhead .back svg{width:22px;height:22px}
+.galhead .gtitle{font-size:17px;font-weight:700}
+.galshadow{height:10px;background:linear-gradient(#0000001a,transparent)}
+
+.searchwrap{padding:18px 18px 6px}
+.searchbox{display:flex;align-items:center;gap:10px;border:1px solid #cfd6d8;border-radius:7px;padding:11px 14px;color:var(--muted)}
+.searchbox svg{width:17px;height:17px;color:var(--teal-700)}
+.searchbox input{border:none;outline:none;font-size:14px;width:100%;color:var(--ink);background:transparent}
+
+/* Tabs: gecentreerd, gelijke marge links/rechts */
+.tabs{display:grid;grid-template-columns:repeat(4,auto);justify-content:center;gap:16px 26px;padding:18px 18px 14px}
+.tab{font-size:13px;color:var(--muted);background:none;padding:2px 0;white-space:nowrap;text-align:left}
+.tab.active{color:var(--ink);font-weight:700}
+
+.gallery{padding:12px 18px 8px;display:grid;grid-template-columns:1fr;gap:32px}
+.artcard{cursor:pointer}
+.artcard .frame{border:1px solid #ececec;background:#fff;line-height:0;overflow:hidden}
+.artcard .frame img{width:100%;height:auto;object-fit:cover}
+.artcard .meta{display:flex;align-items:flex-start;justify-content:space-between;margin-top:12px;gap:12px}
+.artcard .meta .who b{font-weight:700;font-size:16px;display:block}
+.artcard .meta .who span{font-size:13.5px;color:var(--muted)}
+.fav{flex:none;color:var(--ink);background:none;padding:2px}
+.fav svg{width:26px;height:26px}
+.fav.on svg{color:var(--red)}
+.empty{padding:40px 18px;text-align:center;color:var(--muted);font-size:14px}
+
+/* ---------- Kunstwerk-modal ---------- */
+.kmodal{position:fixed;inset:0;z-index:60;display:none;background:rgba(0,0,0,.4)}
+.kmodal.show{display:block}
+.kmodal .sheet{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--app);height:100%;background:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.kmhead{position:sticky;top:0;background:var(--teal-850);color:#fff;display:flex;align-items:center;gap:16px;padding:18px 18px;z-index:2}
+.kmhead .back{display:flex;color:#fff}
+.kmhead .back svg{width:23px;height:23px}
+.kmhead .kmtitle{font-size:18px;font-weight:700}
+.kmimg{padding:22px 22px 0}
+.kmimg img{width:100%;height:auto;border-radius:2px}
+.kmbody{padding:18px 22px 60px}
+.kmdiv{border-top:1px solid var(--line);margin:6px 0 18px}
+.kmlabel{font-size:13px;color:var(--muted);margin:16px 0 2px}
+.kmartistrow{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.kmartist{font-weight:300;font-size:30px;margin:0}
+.kmfav svg{width:32px;height:32px;color:var(--ink)}
+.kmfav.on svg{color:var(--red)}
+.kmcols{display:flex;gap:70px}
+.kmval{font-size:17px;margin:0}
+.kmdesc{font-size:15.5px;color:#222;margin:4px 0 0;line-height:1.6}
+.kmloc{font-size:16px;margin:2px 0 0}
+
+/* ============================================================
+   OEFENINGEN
+   ============================================================ */
+.exgrid{padding:6px 18px 8px;display:grid;grid-template-columns:1fr;gap:26px}
+.excard{position:relative;border:1px solid #d9d9d9;border-radius:18px;box-shadow:0 8px 18px rgba(0,0,0,.07);padding:22px 20px 20px;background:#fff}
+.extag{display:inline-block;font-size:12px;color:#234;background:var(--pill-teal);padding:4px 12px;border-radius:14px;margin-bottom:14px}
+.extag.orange{background:var(--pill-orange)}
+.excard .exfav{position:absolute;top:20px;right:20px}
+.excard .exfav svg{width:26px;height:26px;color:#1f1f1f}
+.excard .exfav.on svg{color:var(--red)}
+.excard h3{font-weight:300;font-size:27px;margin:0 0 10px}
+.excard p{font-size:14.5px;color:#2c2c2c;margin:0 0 22px;padding-right:30px}
+.exfoot{display:flex;align-items:center;justify-content:space-between}
+.extime{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:13.5px}
+.extime svg{width:15px;height:15px}
+.exgo{line-height:0}
+.exgo img{width:38px;height:38px}
+
+/* Oefening detail */
+.exhead{background:var(--teal-850);color:#fff;display:flex;align-items:center;gap:16px;padding:18px 18px}
+.exhead svg{width:24px;height:24px}
+.exhead .t{font-size:20px;font-weight:700}
+.exdetail{padding:20px 22px 30px}
+.backlink{display:inline-flex;align-items:center;gap:6px;color:var(--teal-850);font-size:15px;margin-bottom:6px}
+.backlink svg{width:16px;height:16px}
+.exdetail .row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.exdetail h1{font-weight:300;font-size:34px;margin:4px 0 12px}
+.exdetail .heartbig svg{width:34px;height:34px;color:var(--red)}
+.exdetail .desc{font-size:18px;color:#222;margin:0 0 6px}
+.stage{height:320px;display:flex;align-items:center;justify-content:center;margin:10px 0}
+.breathcircle{width:200px;height:200px;border-radius:50%;background:#bfe3f3;display:flex;align-items:center;justify-content:center}
+.breathcircle .inner{width:170px;height:170px;border-radius:50%;background:#8fd0ee}
+.phase{text-align:center;color:var(--teal-850);font-size:17px;margin-top:4px}
+.phasecount{text-align:center;font-size:22px;margin:2px 0 22px}
+.exbtns{display:flex;flex-direction:column;align-items:center;gap:14px}
+.exbtn{background:var(--teal-900);color:#fff;font-size:19px;padding:14px 34px;border-radius:8px;box-shadow:0 6px 14px rgba(0,0,0,.18)}
+.exbtn.secondary{background:var(--teal-850);font-size:18px}
+
+/* ============================================================
+   CANVAS
+   ============================================================ */
+.canvasframe{background:var(--teal-850);border-radius:22px;padding:18px;margin:8px 0 6px}
+.canvasframe canvas{background:#fff;width:100%;height:520px;border-radius:4px;touch-action:none;display:block;cursor:crosshair}
+.toolbar{display:flex;align-items:center;justify-content:center;gap:18px;padding:14px 0 8px;flex-wrap:wrap}
+.tool{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:8px;color:#222}
+.tool svg{width:24px;height:24px}
+.tool.active{background:#e6eef0;outline:2px solid var(--teal-700)}
+.tool .wheel{width:24px;height:24px;border-radius:50%;background:conic-gradient(#f44,#fb3,#fd3,#5d5,#3cf,#46f,#a4f,#f4a,#f44)}
+.palette{display:flex;gap:12px;justify-content:center;padding:4px 0 6px;flex-wrap:wrap}
+.swatch{width:30px;height:30px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #ccc}
+.swatch.active{box-shadow:0 0 0 2px var(--teal-900)}
+.swlabel{font-size:11px;color:var(--muted);text-align:center;margin-top:2px}
+.sendwrap{display:flex;justify-content:center;margin:6px 0 2px}
+.modal{position:fixed;inset:0;background:rgba(20,40,48,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:24px}
+.modal.show{display:flex}
+.modal .box{background:#fff;border-radius:16px;max-width:340px;text-align:center;padding:28px 24px}
+.modal .box .check{width:60px;height:60px;border-radius:50%;background:var(--turq);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.modal .box .check svg{width:32px;height:32px}
+.modal .box h3{margin:0 0 8px;font-weight:700;font-size:20px}
+.modal .box p{margin:0 0 20px;font-size:14px;color:#444}
+.modal .box button{background:var(--teal-900);color:#fff;padding:10px 22px;border-radius:8px;font-size:15px}
